@@ -10,13 +10,23 @@ Skills define _how_ tools work. This file is for _your_ specifics — the stuff 
 
 ### Python Virtual Environment
 
-**IMPORTANT:** All Python commands run in a virtual environment. Always activate it first:
+**Important:** All Python commands run in a virtual environment. Activate it first:
 
 ```bash
 source /var/apps/com.dustinky.qwenpaw/home/venv/bin/activate
 ```
 
-After activation, use `python3` or `pip3` directly. The virtual environment is already configured with all required dependencies.
+After activation, use `python3` or `pip3` directly. The virtual environment has all required dependencies configured.
+
+### Node.js Environment
+
+**Important:** All Node.js commands run in a virtual environment. Activate it first:
+
+```bash
+export PATH=/var/apps/nodejs_v22/target/bin:$PATH
+```
+
+After activation, use `node` or `npm` directly. The virtual environment has all required dependencies configured.
 
 ### What Goes Here
 

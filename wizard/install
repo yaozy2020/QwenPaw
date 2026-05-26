@@ -80,18 +80,36 @@
                 "helpText": "选择需要安装的可选组件。如果您不需要使用本地 Ollama 模型或浏览器自动化功能，可以跳过安装以节省时间。"
             },
             {
-                "type": "switch",
+                "type": "radio",
                 "field": "wizard_install_ollama",
                 "label": "安装 Ollama 驱动",
-                "initValue": "true",
-                "helpText": "安装 Ollama 驱动以支持本地大语言模型。需要先安装飞牛应用商店中的 Ollama 应用。"
+                "initValue": "false",
+                "options": [
+                    {
+                        "label": "不安装",
+                        "value": "false"
+                    },
+                    {
+                        "label": "安装 (需先安装飞牛应用商店中的 Ollama 应用)",
+                        "value": "true"
+                    }
+                ]
             },
             {
-                "type": "switch",
+                "type": "radio",
                 "field": "wizard_install_playwright",
                 "label": "安装 Playwright",
-                "initValue": "true",
-                "helpText": "安装 Playwright 浏览器自动化工具，用于网页抓取等 Skills 功能。安装时间较长。"
+                "initValue": "false",
+                "options": [
+                    {
+                        "label": "不安装",
+                        "value": "false"
+                    },
+                    {
+                        "label": "安装 (用于浏览器自动化，安装时间较长)",
+                        "value": "true"
+                    }
+                ]
             }
         ]
     },

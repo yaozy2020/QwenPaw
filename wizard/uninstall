@@ -25,14 +25,14 @@
                 "type": "switch",
                 "field": "wizard_keep_runtime",
                 "label": "保留运行环境",
-                "initValue": "false",
+                "initValue": "true",
                 "helpText": "如果勾选，将保留运行环境（包含 venv 等），下次安装可复用。"
             },
             {
                 "type": "switch",
                 "field": "wizard_confirm_uninstall",
                 "label": "我已了解风险，确认卸载",
-                "initValue": "false",
+                "initValue": "true",
                 "rules": [
                     {
                         "required": true,

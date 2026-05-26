@@ -1,8 +1,8 @@
 appname                    = com.dustinky.qwenpaw
-version                    = 1.1.4.post3
+version                    = 1.1.8
 display_name               = QwenPaw
-desc                       = `<p>国产小龙虾QwenPaw是阿里旗下一款个人助理型产品，部署在您自己的环境中。支持多通道对话（钉钉、飞书、QQ、微信、Discord、iMessage）、定时执行任务，能力由 Skills 决定且可无限扩展。数据全在本地，不依赖第三方托管，由 AgentScope 团队基于 AgentScope、AgentScope Runtime 与 ReMe 构建。</p><p>1. 安装过程中会自动配置内置的 Ollama 驱动及PlayWright，<b>进度条可能会在 55% 左右停留较长时间</b>，请耐心等待。</p><p>2. 如果需要使用内置的 Ollama 模型驱动，请先在飞牛应用商店中安装 <b>Ollama</b> 应用。</p><p>3. 更多使用问题请加入 QQ 群 <a href="https://qun.qq.com/universal-share/share?ac=1&authKey=eh3ZjF03sS5h3xycHBkJxllqsbpz0QJTTRMVjySNNDp4W3jtafZtnrRe9t%2BrHfmZ&busi_data=eyJncm91cENvZGUiOiIxMDkxMzQ4MTkyIiwidG9rZW4iOiJUM043MmdJbytIWTlndCtkaWgyV2pUQTgyeXh1YzVMR21SZGxEUjJuVHRjVW1WYTE3d3B1ODI4c28rSjdUQy9LIiwidWluIjoiODE1MjIzNTgifQ%3D%3D&data=zc5hDTqOp2xm6e7x-U_2Yl0KARi6A5uyvzlnyU6cfjAFK7qn4S8Zz5D9kvvSd9BlUXV7gKXlmPyfVQV2PA_IiQ&svctype=4&tempid=h5_group_info" target="_blank">1091348192</a> 进行交流。</p>`
-platform                   = x86
+desc                       = `<p>QwenPaw 是一款个人助理型产品，部署在你自己的环境中。核心功能：多通道对话（钉钉、飞书、Discord、Telegram 等），多智能体协作（独立配置、记忆和技能，互相通信完成复杂任务），定时执行任务，能力由 Skills 决定且可无限扩展，支持本地运行大模型完全离线工作，数据全在本地不依赖第三方托管，多层安全防护机制。安装注意事项：可选择是否安装 Ollama 驱动及 Playwright，进度条可能在 55% 左右停留较长时间。使用 Ollama 需先在飞牛应用商店安装 Ollama 应用，连接时 API Key 不可为空。更多问题可加入 QQ 群 <a href="https://qun.qq.com/universal-share/share?ac=1&authKey=eh3ZjF03sS5h3xycHBkJxllqsbpz0QJTTRMVjySNNDp4W3jtafZtnrRe9t%2BrHfmZ&busi_data=eyJncm91cENvZGUiOiIxMDkxMzQ4MTkyIiwidG9rZW4iOiJUM043MmdJbytIWTlndCtkaWgyV2pUQTgyeXh1YzVMR21SZGxEUjJuVHRjVW1WYTE3d3B1ODI4c28rSjdUQy9LIiwidWluIjoiODE1MjIzNTgifQ%3D%3D&data=zc5hDTqOp2xm6e7x-U_2Yl0KARi6A5uyvzlnyU6cfjAFK7qn4S8Zz5D9kvvSd9BlUXV7gKXlmPyfVQV2PA_IiQ&svctype=4&tempid=h5_group_info" target="_blank">1091348192</a>。</p>`
+platform                   = all
 source                     = thirdparty
 maintainer                 = AgentScope团队
 maintainer_url             = https://qwenpaw.agentscope.io
@@ -15,4 +15,4 @@ checkport                  = false
 service_port               = 19091
 disable_authorization_path = true
 install_dep_apps           = python312:nodejs_v22
-changelog                  = '1.1.4.post3: 新增计划模式、记忆与上下文重构、SIP语音频道、DeepSeek V4模型、工具守卫审批系统、独立Agent模型配置、会话右键菜单、钉钉语音识别与Markdown消息、QQ引用消息支持、微信交互式配置向导、Shell绕过检测可配置化、免认证主机白名单；优化Docker构建、动态插件注册、Token用量异步缓冲；修复多项bug'
+changelog                  = '新增官方插件分发、QwenPaw Pet桌面宠物、CloudPaw阿里云部署插件、浏览器崩溃恢复、/make-skill命令、收件箱批量操作、聊天历史抽屉固定、自定义HTTP Headers、按模型配置Token限制、Matrix E2EE验证、Telegram/钉钉/飞书流式输出；优化控制台顶栏导航、流式任务超时；修复企业微信重复占位符、微信轮询线程崩溃、QQ频道重连风暴、SSE连接泄漏等多项bug'

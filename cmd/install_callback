@@ -13,20 +13,6 @@ log_msg() {
     echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "${LOG_FILE}"
 }
 
-handle_error() {
-    local exit_code=$?
-    if [ "$exit_code" -eq 0 ]; then exit_code=1; fi
-    local msg="${ERROR_MSG:-执行安装脚本出错 (Exit Code: $exit_code)}"
-    
-    if [ -n "${TRIM_TEMP_LOGFILE}" ]; then
-        echo "${msg}" >> "${TRIM_TEMP_LOGFILE}"
-    fi
-    
-    log_msg "❌ ${msg}"
-    exit 1
-}
-trap 'handle_error' ERR
-
 chown -R "${TRIM_USERNAME}:${TRIM_GROUPNAME}" "${WORKING_DIR}"
 chown -R "${TRIM_USERNAME}:${TRIM_GROUPNAME}" "${TRIM_PKGVAR}"
 chown -R "${TRIM_USERNAME}:${TRIM_GROUPNAME}" "${TRIM_PKGETC}"
@@ -116,18 +102,8 @@ if [ "$INSTALL_PLAYWRIGHT" = "true" ]; then
     cat "${PIP_LOG}" >> "${LOG_FILE}"
     rm -f "${PIP_LOG}"
 
-    PATCH_SCRIPT="${TRIM_APPDEST}/qwenpaw/patch_playwright.py"
-    if [ -f "${PATCH_SCRIPT}" ]; then
-        log_msg "正在修改 playwright 镜像源为 npmmirror..."
-        python3 "${PATCH_SCRIPT}"
-    else
-        log_msg "⚠️ 未找到 patch_playwright.py，跳过镜像源修改"
-    fi
-
-    log_msg "playwright 镜像源已修改为 npmmirror，设置权限"
-
-    log_msg "正在安装 playwright chromium 浏览器..."
-    playwright install chromium
+    log_msg "正在安装 playwright chromium 浏览器 (使用 npmmirror 镜像加速)..."
+    PLAYWRIGHT_DOWNLOAD_HOST=https://registry.npmmirror.com/-/binary/playwright playwright install chromium
     log_msg "playwright chromium 浏览器安装成功"
 else
     log_msg "跳过安装 Playwright"

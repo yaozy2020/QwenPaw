@@ -1,57 +1,66 @@
 #!/bin/bash
 
-# 错误处理
-handle_error() {
-    local exit_code=$?
-    if [ "$exit_code" -eq 0 ]; then exit_code=1; fi
-    local msg="执行卸载脚本出错 (Exit Code: $exit_code)"
-    if [ -n "${TRIM_TEMP_LOGFILE}" ]; then
-        echo "${msg}" >> "${TRIM_TEMP_LOGFILE}"
-    fi
-    exit 1
-}
-trap 'handle_error' ERR
+LOG_FILE="${TRIM_PKGVAR}/qwenpaw-uninstall.log"
+CONFIG_DIR="${TRIM_DATA_SHARE_PATHS%%:*}/.qwenpaw"
 
-# 停止服务 (保险起见，虽然系统可能已经停止了)
+log_msg() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "${LOG_FILE}" 2>/dev/null || true
+}
+
+log_msg "开始卸载 QwenPaw..."
+
 PID_FILE="${TRIM_PKGVAR}/qwenpaw.pid"
 if [ -f "${PID_FILE}" ]; then
+    log_msg "正在停止 QwenPaw 进程..."
     pid=$(head -n 1 "${PID_FILE}" | tr -d '[:space:]')
-    if kill -0 "${pid}" 2>/dev/null; then
-        kill -TERM "${pid}"
-        sleep 2
-        kill -KILL "${pid}" 2>/dev/null
+    if [ -n "${pid}" ] && kill -0 "${pid}" 2>/dev/null; then
+        kill -TERM "${pid}" 2>/dev/null || true
+        count=0
+        while kill -0 "${pid}" 2>/dev/null && [ $count -lt 10 ]; do
+            sleep 1
+            count=$((count + 1))
+        done
+        kill -KILL "${pid}" 2>/dev/null || true
     fi
-    rm -f "${PID_FILE}"
+    rm -f "${PID_FILE}" 2>/dev/null || true
+    log_msg "QwenPaw 进程已停止"
 fi
 
-# 根据用户选择决定是否删除 TRIM_PKGHOME (运行环境/应用代码)
 KEEP_RUNTIME="${wizard_keep_runtime:-false}"
 if [ "$KEEP_RUNTIME" != "true" ]; then
     if [ -d "${TRIM_PKGHOME}" ]; then
-        rm -rf "${TRIM_PKGHOME}"
+        log_msg "正在删除运行环境: ${TRIM_PKGHOME}"
+        rm -rf "${TRIM_PKGHOME}" 2>/dev/null || true
+        log_msg "运行环境已删除"
     fi
 else
-    echo "保留运行环境"
+    log_msg "保留运行环境"
     if [ -d "${TRIM_PKGHOME}" ]; then
-        printf "%s\n" "$(date '+%Y-%m-%d %H:%M:%S')" > "${TRIM_PKGHOME}/.qwenpaw_keep_runtime"
+        touch "${TRIM_PKGHOME}/.qwenpaw_keep_runtime" 2>/dev/null || true
     fi
 fi
 
-# 始终删除 TRIM_PKGVAR (运行时数据/日志/PID)
 if [ -d "${TRIM_PKGVAR}" ]; then
-    rm -rf "${TRIM_PKGVAR}"
+    log_msg "正在删除运行时数据: ${TRIM_PKGVAR}"
+    rm -rf "${TRIM_PKGVAR}" 2>/dev/null || true
+    log_msg "运行时数据已删除"
 fi
 
-# 根据用户选择决定是否删除 TRIM_PKGETC (配置/Skills/会话)
 KEEP_CONFIG="${wizard_keep_config:-true}"
-
 if [ "$KEEP_CONFIG" != "true" ]; then
-    if [ -d "${TRIM_PKGETC}" ]; then
-        rm -rf "${TRIM_PKGETC}"
+    if [ -d "${CONFIG_DIR}" ]; then
+        log_msg "正在删除配置文件: ${CONFIG_DIR}"
+        rm -rf "${CONFIG_DIR}" 2>/dev/null || true
+        log_msg "配置文件已删除"
     fi
-    echo "QwenPaw 已完全卸载 (包括配置文件)"
+    if [ -d "${TRIM_PKGETC}" ]; then
+        log_msg "正在删除应用配置: ${TRIM_PKGETC}"
+        rm -rf "${TRIM_PKGETC}" 2>/dev/null || true
+        log_msg "应用配置已删除"
+    fi
+    log_msg "QwenPaw 已完全卸载 (包括配置文件)"
 else
-    echo "QwenPaw 已卸载 (保留配置文件)"
+    log_msg "QwenPaw 已卸载 (保留配置文件)"
 fi
 
 exit 0

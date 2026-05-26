@@ -13,6 +13,7 @@ export HOME="${TRIM_PKGETC}"
 export QWENPAW_WORKING_DIR="${TRIM_DATA_SHARE_PATHS%%:*}/.qwenpaw"
 export QWENPAAW_LOG_LEVEL="${LOG_LEVEL}"
 export QWENPAW_AUTH_ENABLED=true
+export PATH="/var/apps/nodejs_v22/target/bin:$PATH"
 
 CMD="source ${VENV_DIR}/bin/activate && python3 -m qwenpaw app --host 0.0.0.0 --port ${TRIM_SERVICE_PORT:-19091} --workers ${WORKERS}"
 
