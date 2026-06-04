@@ -10,7 +10,7 @@ LOG_LEVEL="${wizard_log_level:-info}"
 
 export HOME="${TRIM_PKGETC}"
 export QWENPAW_WORKING_DIR="${TRIM_DATA_SHARE_PATHS%%:*}/.qwenpaw"
-export QWENPAAW_LOG_LEVEL="${LOG_LEVEL}"
+export QWENPAW_LOG_LEVEL="${LOG_LEVEL}"
 export QWENPAW_AUTH_ENABLED=true
 export PATH="/var/apps/nodejs_v24/target/bin:$PATH"
 
