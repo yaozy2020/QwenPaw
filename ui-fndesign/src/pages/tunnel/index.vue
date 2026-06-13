@@ -2,8 +2,15 @@
 import { ref, computed, onMounted } from 'vue'
 
 const APP_NAME = 'com.dustinky.qwenpaw'
-const DEFAULT_SERVICE = 'http://localhost:19091'
 const API_BASE = '/cgi/ThirdParty/com.dustinky.tunnel/api.cgi'
+
+const getDefaultService = (): string => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname
+    return `http://${hostname}:19091`
+  }
+  return 'http://localhost:19091'
+}
 
 const toast = useToast()
 const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') => {
@@ -58,7 +65,7 @@ const isLoadingDomain = ref(false)
 
 // 域名注册表单
 const domain = ref('')
-const service = ref(DEFAULT_SERVICE)
+const service = ref(getDefaultService())
 const isRegistering = ref(false)
 
 const tunnelStatusText = computed(() => {
@@ -146,6 +153,10 @@ const registerDomain = async () => {
   }
   if (!service.value.trim()) {
     showNotification('请输入本地服务地址', 'warning')
+    return
+  }
+  if (service.value.toLowerCase().startsWith('https://')) {
+    showNotification('本地服务地址请使用 http 协议，不要使用 https', 'warning')
     return
   }
 
@@ -347,11 +358,18 @@ onMounted(() => {
           <p class="text-xs text-[var(--ui-text-muted)] mt-1">
             QwenPaw 服务的本地访问地址
           </p>
+          <div
+            v-if="service.value.toLowerCase().startsWith('https://')"
+            class="mt-2 p-2 rounded-lg bg-red-50 dark:bg-red-500/10 text-xs text-red-600 dark:text-red-400"
+          >
+            <UIcon name="i-lucide-alert-circle" class="w-3 h-3 inline-block mr-1" />
+            本地服务地址请使用 http 协议，不要使用 https
+          </div>
         </UFormField>
 
         <UButton
           :loading="isRegistering"
-          :disabled="!tunnelStatus?.running || !tunnelStatus?.cfConfigured"
+          :disabled="!tunnelStatus?.running || !domainStatus?.cfConfigured"
           color="primary"
           @click="registerDomain"
         >
@@ -359,12 +377,12 @@ onMounted(() => {
         </UButton>
 
         <div
-          v-if="!tunnelStatus?.running || !tunnelStatus?.cfConfigured"
+          v-if="!tunnelStatus?.running || !domainStatus?.cfConfigured"
           class="p-3 rounded-lg bg-amber-50 dark:bg-amber-500/10 text-sm text-amber-700 dark:text-amber-400"
         >
           <UIcon name="i-lucide-alert-triangle" class="w-4 h-4 inline-block mr-1" />
           <span v-if="!tunnelStatus?.running">Tunnel 未运行，请先在 Cloudflare Tunnel 应用中启动 Tunnel</span>
-          <span v-else-if="!tunnelStatus?.cfConfigured">Cloudflare 账号未配置，请先在 Cloudflare Tunnel 应用中完成配置</span>
+          <span v-else-if="!domainStatus?.cfConfigured">Cloudflare 账号未配置，请先在 Cloudflare Tunnel 应用中完成配置</span>
         </div>
       </div>
     </UCard>
