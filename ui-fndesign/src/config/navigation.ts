@@ -28,6 +28,11 @@ export const navigationConfig: NavigationConfig = {
         to: '/logs',
       },
       {
+        label: '外网访问',
+        icon: 'i-lucide-globe',
+        to: '/tunnel',
+      },
+      {
         label: 'QQ群交流',
         icon: 'i-lucide-users',
         to: 'https://qm.qq.com/q/zXE0IqZtII',
@@ -50,6 +55,11 @@ export const navigationConfig: NavigationConfig = {
       label: '日志',
       icon: 'i-lucide-file-text',
       to: '/logs',
+    },
+    {
+      label: '外网',
+      icon: 'i-lucide-globe',
+      to: '/tunnel',
     },
     {
       label: 'QQ群',
