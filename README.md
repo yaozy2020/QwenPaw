@@ -1,3 +1,9 @@
+> **此仓库已迁移**  
+> 本项目已迁移至 [naspk-com/QwenPaw](https://github.com/naspk-com/QwenPaw)，请访问新仓库获取最新代码和 Release。  
+> 此仓库已归档，不再维护。
+
+---
+
 # QwenPaw for fnOS
 
 [![Version](https://img.shields.io/badge/version-1.1.10-blue)](https://github.com/dustink66/com.dustinky.qwenpaw/releases)
