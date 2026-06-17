@@ -13,10 +13,11 @@ echo "[1/5] 准备 build 目录 ..."
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
-# 2. 打包 app.tgz
+# 2. 打包 app.tgz（注意：不要 app/ 前缀，fnOS 期望内容在根目录）
 echo "[2/5] 打包 app.tgz ..."
+cd "$PROJ_DIR/app"
+tar czf "$BUILD_DIR/app.tgz" .
 cd "$PROJ_DIR"
-tar czf "$BUILD_DIR/app.tgz" app
 
 # 3. 计算 checksum
 echo "[3/5] 计算 checksum ..."

@@ -16,3 +16,4 @@ service_port               = 19091
 disable_authorization_path = false
 install_dep_apps           = nodejs_v24:python312
 changelog                  = '升级至 QwenPaw 1.1.12 版本，移除 Cloudflare Tunnel 穿透功能，修复配置回调脚本，更换发布者为 yaozy'
+checksum                   = 
