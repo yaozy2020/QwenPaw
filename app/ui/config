@@ -1,6 +1,6 @@
 {
     ".url": {
-        "com.dustinky.qwenpaw": {
+        "com.dustinky.qwenpaw.Application": {
             "title": "QwenPaw",
             "icon": "images/icon_{0}.png",
             "type": "iframe",
