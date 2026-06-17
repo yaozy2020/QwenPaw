@@ -1,39 +1,67 @@
 #!/bin/bash
 
-# 错误处理
-handle_error() {
-    local exit_code=$?
-    if [ "$exit_code" -eq 0 ]; then exit_code=1; fi
-    local msg="执行配置脚本出错 (Exit Code: $exit_code)"
-    if [ -n "${TRIM_TEMP_LOGFILE}" ]; then
-        echo "${msg}" >> "${TRIM_TEMP_LOGFILE}"
-    fi
-    exit 1
-}
-trap 'handle_error' ERR
+set -e
 
-# 配置更新后重启服务以生效
+LOG_FILE="${TRIM_PKGVAR}/qwenpaw-configure.log"
 PID_FILE="${TRIM_PKGVAR}/qwenpaw.pid"
 
-echo "正在重启 QwenPaw 服务以应用新配置..."
+log_msg() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "${LOG_FILE}"
+}
 
+log_msg "配置已更新，开始重启 QwenPaw..."
+
+# 停止旧进程
 if [ -f "${PID_FILE}" ]; then
     pid=$(head -n 1 "${PID_FILE}" | tr -d '[:space:]')
+
     if kill -0 "${pid}" 2>/dev/null; then
-        kill -TERM "${pid}"
-        # 等待进程结束
+        log_msg "Stopping PID ${pid}"
+
+        kill -TERM "${pid}" 2>/dev/null || true
+
         count=0
-        while kill -0 "${pid}" 2>/dev/null; do
-            if [ $count -ge 10 ]; then
-                break
-            fi
+        while kill -0 "${pid}" 2>/dev/null && [ $count -lt 10 ]; do
             sleep 1
             count=$((count + 1))
         done
-        kill -KILL "${pid}" 2>/dev/null
+
+        if kill -0 "${pid}" 2>/dev/null; then
+            kill -KILL "${pid}" 2>/dev/null || true
+        fi
     fi
+
     rm -f "${PID_FILE}"
 fi
 
-echo "配置已更新，服务将自动重启"
-exit 0
+# 启动新进程（完全复用主脚本逻辑）
+WORKING_DIR="${TRIM_PKGHOME}"
+VENV_DIR="${WORKING_DIR}/venv"
+
+LOG_LEVEL="${wizard_log_level:-info}"
+
+export HOME="${TRIM_PKGETC}"
+export QWENPAW_WORKING_DIR="${TRIM_DATA_SHARE_PATHS%%:*}/.qwenpaw"
+export QWENPAAW_LOG_LEVEL="${LOG_LEVEL}"
+export QWENPAW_AUTH_ENABLED=true
+export PATH="/var/apps/nodejs_v24/target/bin:$PATH"
+
+CMD="source ${VENV_DIR}/bin/activate && python3 -m qwenpaw app --host 0.0.0.0 --port ${TRIM_SERVICE_PORT:-19091}"
+
+log_msg "Starting QwenPaw..."
+
+bash -c "${CMD}" >> "${TRIM_PKGVAR}/qwenpaw.log" 2>&1 &
+
+echo "$!" > "${PID_FILE}"
+
+sleep 3
+
+if kill -0 "$(cat "${PID_FILE}")" 2>/dev/null; then
+    log_msg "QwenPaw restarted successfully"
+    echo "配置已更新并生效"
+    exit 0
+fi
+
+log_msg "QwenPaw restart failed"
+echo "配置已保存，但服务启动失败"
+exit 1
