@@ -37,7 +37,6 @@ BUILTIN_CHANNEL_TYPES = (
     "telegram",
     "mqtt",
     "console",
-    "voice",
     "sip",
     "xiaoyi",
     "yuanbao",

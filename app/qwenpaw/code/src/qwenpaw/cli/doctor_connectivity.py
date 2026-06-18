@@ -25,7 +25,6 @@ from ..config.config import (
     OneBotConfig,
     QQConfig,
     TelegramConfig,
-    VoiceChannelConfig,
     WecomConfig,
     XiaoYiConfig,
     WeChatConfig,
@@ -176,17 +175,6 @@ def _probe_wecom(
     return []
 
 
-def _probe_voice(
-    agent_id: str,
-    _cfg: VoiceChannelConfig,
-    timeout: float,
-) -> list[str]:
-    err = _http_get_ok("https://api.twilio.com/", timeout)
-    if err:
-        return [f"{agent_id}: voice (Twilio): reach api.twilio.com — {err}"]
-    return []
-
-
 def _probe_xiaoyi(
     agent_id: str,
     cfg: XiaoYiConfig,
@@ -234,7 +222,6 @@ _BUILTIN_PROBES: dict[str, ChannelProbe] = {
     "dingtalk": _probe_dingtalk,
     "qq": _probe_qq,
     "wecom": _probe_wecom,
-    "voice": _probe_voice,
     "xiaoyi": _probe_xiaoyi,
     "wechat": _probe_wechat,
 }

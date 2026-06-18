@@ -363,20 +363,6 @@ class MatrixConfig(BaseChannelConfig):
     outbound_structured_mentions: bool = True
 
 
-class VoiceChannelConfig(BaseChannelConfig):
-    """Voice channel: Twilio ConversationRelay + Cloudflare Tunnel."""
-
-    twilio_account_sid: str = ""
-    twilio_auth_token: str = ""
-    phone_number: str = ""
-    phone_number_sid: str = ""
-    tts_provider: str = "google"
-    tts_voice: str = "en-US-Journey-D"
-    stt_provider: str = "deepgram"
-    language: str = "en-US"
-    welcome_greeting: str = "Hi! This is QwenPaw. How can I help you?"
-
-
 class SIPChannelConfig(BaseChannelConfig):
     """SIP voice channel: dual-track (pyVoIP dev / LiveKit production)."""
 
@@ -470,7 +456,6 @@ class ChannelConfig(BaseModel):
     mqtt: MQTTConfig = MQTTConfig()
     console: ConsoleConfig = ConsoleConfig()
     matrix: MatrixConfig = MatrixConfig()
-    voice: VoiceChannelConfig = VoiceChannelConfig()
     sip: SIPChannelConfig = SIPChannelConfig()
     wecom: WecomConfig = WecomConfig()
     xiaoyi: XiaoYiConfig = XiaoYiConfig()
@@ -1837,7 +1822,6 @@ ChannelConfigUnion = Union[
     MQTTConfig,
     ConsoleConfig,
     MatrixConfig,
-    VoiceChannelConfig,
     SIPChannelConfig,
     WecomConfig,
     XiaoYiConfig,
