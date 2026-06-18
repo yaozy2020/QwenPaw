@@ -25,7 +25,6 @@ tests/
     ├── test_onebot_channel.py  # OneBotChannel 单元测试（53 个测试）
     ├── test_qq.py              # QQChannel 单元测试（116 个测试）
     ├── test_telegram.py        # TelegramChannel 单元测试（93 个测试）
-    ├── test_voice.py           # VoiceChannel 单元测试（37 个测试）
     ├── test_wecom.py           # WecomChannel 单元测试（69 个测试）
     ├── test_wechat.py          # WeChatChannel 单元测试（78 个测试）
     └── test_xiaoyi.py          # XiaoyiChannel 单元测试（57 个测试）
@@ -59,7 +58,6 @@ tests/
 | OneBot | 53 | 756 | 中 | ✅ 完成 |
 | MQTT | 50 | 922 | 中 | ✅ 完成 |
 | IMessage | 37 | 1,007 | 简单-中 | ✅ 完成 |
-| Voice | 37 | 651 | 简单 | ✅ 完成 |
 
 **总计：1,200+ 单元测试，分布在 16 个测试文件中**
 
@@ -183,7 +181,7 @@ class TestYourChannel:
    ConsoleChannel, DingTalkChannel, FeishuChannel,
    DiscordChannel, IMessageChannel, MQTTChannel,
    MatrixChannel, MattermostChannel, QQChannel,
-   TelegramChannel, VoiceChannel
+   TelegramChannel
 
 🎉 零缺失测试 - 契约测试和单元测试全部完成！
 ```
