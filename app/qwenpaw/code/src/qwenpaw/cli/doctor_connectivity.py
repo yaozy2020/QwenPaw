@@ -25,6 +25,7 @@ from ..config.config import (
     OneBotConfig,
     QQConfig,
     TelegramConfig,
+    VoiceChannelConfig,
     WecomConfig,
     XiaoYiConfig,
     WeChatConfig,
@@ -175,23 +176,49 @@ def _probe_wecom(
     return []
 
 
-def _probe_xiaoyi(
+def _probe_voice(
     agent_id: str,
-    cfg: XiaoYiConfig,
+    _cfg: VoiceChannelConfig,
     timeout: float,
 ) -> list[str]:
-    raw = (cfg.ws_url or "").strip()
-    if not raw:
-        return []
-    parsed = urlparse(raw)
-    host = parsed.hostname
-    if not host:
-        return [f"{agent_id}: xiaoyi: could not parse host from ws_url"]
-    port = parsed.port or (443 if parsed.scheme in ("wss", "https") else 80)
-    err = _tcp_check(host, port, timeout)
+    err = _http_get_ok("https://api.twilio.com/", timeout)
     if err:
-        return [f"{agent_id}: xiaoyi: TCP {host}:{port} — {err}"]
+        return [f"{agent_id}: voice (Twilio): reach api.twilio.com — {err}"]
     return []
+
+
+def _probe_xiaoyi(
+    agent_id: str,
+    _cfg: XiaoYiConfig,
+    timeout: float,
+) -> list[str]:
+    from qwenpaw.app.channels.xiaoyi.constants import (
+        DEFAULT_WS_URL,
+        DEFAULT_WS_URL_BACKUP,
+    )
+
+    notes: list[str] = []
+    for label, raw in (
+        ("primary", DEFAULT_WS_URL),
+        ("backup", DEFAULT_WS_URL_BACKUP),
+    ):
+        if not raw:
+            continue
+        parsed = urlparse(raw)
+        host = parsed.hostname
+        if not host:
+            continue
+        port = parsed.port or (
+            443 if parsed.scheme in ("wss", "https") else 80
+        )
+        err = _tcp_check(host, port, timeout)
+        if err:
+            notes.append(
+                f"{agent_id}: xiaoyi: "
+                f"TCP {host}:{port} ({label}) "
+                f"\u2014 {err}",
+            )
+    return notes
 
 
 def _probe_wechat(
@@ -222,6 +249,7 @@ _BUILTIN_PROBES: dict[str, ChannelProbe] = {
     "dingtalk": _probe_dingtalk,
     "qq": _probe_qq,
     "wecom": _probe_wecom,
+    "voice": _probe_voice,
     "xiaoyi": _probe_xiaoyi,
     "wechat": _probe_wechat,
 }

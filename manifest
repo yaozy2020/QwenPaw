@@ -1,5 +1,5 @@
 appname                    = com.dustinky.qwenpaw
-version                    = 1.1.12.3
+version                    = 1.1.12.5
 display_name               = QwenPaw
 desc                       = <p>QwenPaw 是一款个人助理型产品（国产小龙虾），部署在你自己的环境中。</p><h3>核心功能</h3><p>多通道对话（微信、QQ、钉钉、飞书、Discord、Telegram 等），多智能体协作（独立配置、记忆和技能，互相通信完成复杂任务），定时执行任务，能力由 Skills 决定且可无限扩展，支持本地运行大模型完全离线工作，数据全在本地不依赖第三方托管，多层安全防护机制。使用 Ollama 需先在飞牛应用商店安装 Ollama 应用，连接时 API Key 不可为空。更多问题可加入 QQ 群 <a href="https://qm.qq.com/q/b7M0Myqihc" target="_blank">1091348192</a> 进行交流。</p>
 platform                   = all
@@ -15,5 +15,5 @@ checkport                  = false
 service_port               = 19091
 disable_authorization_path = false
 install_dep_apps           = nodejs_v24:python312
-changelog                  = 1) 补齐 install_init/upgrade_init 环境检查日志；2) upgrade_callback 末尾主动调用 install_init/upgrade_init；3) manifest 新增 service_port、disable_authorization_path、checksum 字段，对齐 Hermas 规范。<br/>彻底移除 Cloudflare Tunnel 和 Voice Channel (Twilio) 后端代码
+changelog                  = 1) 同步上游 QwenPaw v1.1.12.post1 源码（src + plugins + setup.py + pyproject.toml + LICENSE）；2) 修复控制台白屏（VITE_BASE_PATH 指向 fnOS cgi 路径）；3) Hermes 风格工程化（build.sh 6 步流程 + scripts/sync-version.py + gen-audit.py + preflight.sh + GitHub Actions CI/CD + bun 工具链）；4) staging 瘦身：fpk 从 ~190M 降至 15M，仅保留运行时必需文件。
 checksum                   = 

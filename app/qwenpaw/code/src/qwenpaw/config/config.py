@@ -363,6 +363,20 @@ class MatrixConfig(BaseChannelConfig):
     outbound_structured_mentions: bool = True
 
 
+class VoiceChannelConfig(BaseChannelConfig):
+    """Voice channel: Twilio ConversationRelay + Cloudflare Tunnel."""
+
+    twilio_account_sid: str = ""
+    twilio_auth_token: str = ""
+    phone_number: str = ""
+    phone_number_sid: str = ""
+    tts_provider: str = "google"
+    tts_voice: str = "en-US-Journey-D"
+    stt_provider: str = "deepgram"
+    language: str = "en-US"
+    welcome_greeting: str = "Hi! This is QwenPaw. How can I help you?"
+
+
 class SIPChannelConfig(BaseChannelConfig):
     """SIP voice channel: dual-track (pyVoIP dev / LiveKit production)."""
 
@@ -397,7 +411,6 @@ class XiaoYiConfig(BaseChannelConfig):
     ak: str = ""  # Access Key
     sk: str = ""  # Secret Key
     agent_id: str = ""  # Agent ID from XiaoYi platform
-    ws_url: str = "wss://hag.cloud.huawei.com/openclaw/v1/ws/link"
     task_timeout_ms: int = 3600000  # 1 hour task timeout
 
 
@@ -412,6 +425,7 @@ class YuanbaoConfig(BaseChannelConfig):
     app_secret: str = ""
     api_domain: str = "bot.yuanbao.tencent.com"
     media_dir: Optional[str] = None
+    accept_bot_messages: bool = False
 
 
 class WeChatConfig(BaseChannelConfig):
@@ -456,6 +470,7 @@ class ChannelConfig(BaseModel):
     mqtt: MQTTConfig = MQTTConfig()
     console: ConsoleConfig = ConsoleConfig()
     matrix: MatrixConfig = MatrixConfig()
+    voice: VoiceChannelConfig = VoiceChannelConfig()
     sip: SIPChannelConfig = SIPChannelConfig()
     wecom: WecomConfig = WecomConfig()
     xiaoyi: XiaoYiConfig = XiaoYiConfig()
@@ -1822,6 +1837,7 @@ ChannelConfigUnion = Union[
     MQTTConfig,
     ConsoleConfig,
     MatrixConfig,
+    VoiceChannelConfig,
     SIPChannelConfig,
     WecomConfig,
     XiaoYiConfig,

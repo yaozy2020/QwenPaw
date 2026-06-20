@@ -2,14 +2,16 @@
 # QwenPaw FPK 打包脚本（参考 Hermes 风格）
 # 用法: bash build.sh
 #   环境变量：
-#     SKIP_FRONTEND=1   跳过前端构建（使用现有 app/www/）
+#     SKIP_FRONTEND=1   跳过前端构建（ui-fndesign 控制面板）
+#     SKIP_CONSOLE=1    跳过 QwenPaw 官方 console 构建（必须已存在产物）
+#     CONSOLE_PM=npm    强制使用 npm 构建 console（默认 npm，因为上游用 npm）
 
 set -e
 
 PROJ_DIR="$(cd "$(dirname "$0")" && pwd)"
 STAGE="$PROJ_DIR/build/staging"
 VERSION=$(grep '^version' "$PROJ_DIR/manifest" | awk -F'=' '{print $2}' | tr -d ' ')
-OUTPUT="$PROJ_DIR/com.dustinky.qwenpaw_v${VERSION}.fpk"
+OUTPUT="$PROJ_DIR/build/com.dustinky.qwenpaw_v${VERSION}.fpk"
 
 # 颜色
 GREEN='\033[0;32m'
@@ -44,6 +46,10 @@ else
   echo "[1/6] 构建前端 UI ..."
   cd "$PROJ_DIR/ui-fndesign"
 
+  # fnOS QwenPaw 控制台 base path（与之前 v1.1.12 修复保持一致）
+  export VITE_BASE_PATH="${VITE_BASE_PATH:-/cgi/ThirdParty/com.dustinky.qwenpaw/index.cgi/}"
+  echo "  VITE_BASE_PATH=$VITE_BASE_PATH"
+
   if command -v bun >/dev/null 2>&1; then
     echo "  使用 Bun 工具链"
     bun install --ignore-scripts
@@ -61,10 +67,40 @@ else
     exit 1
   fi
 
-  rm -rf "$PROJ_DIR/app/www"
-  mkdir -p "$PROJ_DIR/app/www"
-  cp -a dist/. "$PROJ_DIR/app/www/"
+  # Vite outDir 已配置为 ../app/www，产物直接落在 app/www/，无需再 cp
   cd "$PROJ_DIR"
+fi
+
+# [1b/6] 构建 QwenPaw 官方 console（React + Vite，输出到 src/qwenpaw/console/）
+CONSOLE_DEST="$PROJ_DIR/app/qwenpaw/code/src/qwenpaw/console"
+if [ "${SKIP_CONSOLE:-0}" = "1" ]; then
+  echo "[1b/6] 构建 console ... 跳过（SKIP_CONSOLE=1）"
+  if [ ! -f "$CONSOLE_DEST/index.html" ]; then
+    echo -e "${RED}ERROR: SKIP_CONSOLE=1 但 $CONSOLE_DEST/index.html 不存在${NC}"
+    exit 1
+  fi
+else
+  echo "[1b/6] 构建 QwenPaw 官方 console ..."
+  if [ ! -d "$PROJ_DIR/upstream-console" ]; then
+    echo -e "${RED}ERROR: upstream-console/ 目录不存在，请先 cp 上游 console 源码${NC}"
+    exit 1
+  fi
+  cd "$PROJ_DIR/upstream-console"
+  if command -v npm >/dev/null 2>&1; then
+    echo "  使用 npm（上游官方）"
+    if [ ! -d node_modules ] || [ "${CONSOLE_FORCE_INSTALL:-0}" = "1" ]; then
+      npm ci --no-audit --no-fund --prefer-offline 2>&1 | tail -3
+    fi
+    npm run build 2>&1 | tail -3
+  else
+    echo -e "${RED}ERROR: 未找到 npm，无法构建 console${NC}"
+    exit 1
+  fi
+  rm -rf "$CONSOLE_DEST"
+  mkdir -p "$CONSOLE_DEST"
+  cp -a dist/. "$CONSOLE_DEST/"
+  cd "$PROJ_DIR"
+  echo "  console 产物已拷贝到 $CONSOLE_DEST"
 fi
 
 # [2/6] 准备 staging（瘦身核心：仅打包运行时必需文件）
@@ -116,8 +152,7 @@ mv "$FPK_IN_STAGE" "$OUTPUT"
 
 # [5/6] 计算 SHA256
 echo "[5/6] 计算 SHA256 ..."
-cd "$PROJ_DIR"
-sha256sum "$(basename "$OUTPUT")" > "${OUTPUT}.sha256"
+sha256sum "$OUTPUT" > "${OUTPUT}.sha256"
 
 # [6/6] 完成
 echo ""

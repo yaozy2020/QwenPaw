@@ -1,6 +1,6 @@
 # QwenPaw for fnOS — yaozy 二次打包版
 
-[![Version](https://img.shields.io/badge/version-1.1.12.3-blue)](https://github.com/yaozy2020/QwenPaw/releases)
+[![Version](https://img.shields.io/badge/version-1.1.12.5-blue)](https://github.com/yaozy2020/QwenPaw/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![fnOS](https://img.shields.io/badge/fnOS-%E2%89%A5%200.9.21-orange)](https://www.fnnas.com/)
 

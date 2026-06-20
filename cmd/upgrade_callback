@@ -88,5 +88,20 @@ if [ -f "${SCRIPT_DIR}/upgrade_init" ]; then
     bash "${SCRIPT_DIR}/upgrade_init" 2>&1 | while read -r line; do log_msg "upgrade_init: ${line}"; done || true
 fi
 
+# v1.1.12.5: 升级完成后自动重启主服务（修复升级后需手动启停的体验问题）
+if [ -f "${SCRIPT_DIR}/main" ]; then
+    log_msg "正在重启 QwenPaw 主服务..."
+    # 停旧进程（main stop 会自动检查 PID_FILE）
+    bash "${SCRIPT_DIR}/main" stop 2>&1 | while read -r line; do log_msg "main stop: ${line}"; done || true
+    # 启新进程
+    bash "${SCRIPT_DIR}/main" start 2>&1 | while read -r line; do log_msg "main start: ${line}"; done || true
+    sleep 2
+    if bash "${SCRIPT_DIR}/main" status >/dev/null 2>&1; then
+        log_msg "主服务重启成功"
+    else
+        log_msg "WARNING: 主服务重启失败，请手动运行 main start 或重启应用"
+    fi
+fi
+
 log_msg "QwenPaw 升级成功！"
 exit 0

@@ -5,3 +5,9 @@
 build/
 ui-fndesign/dist/
 ui-fndesign/.turbo/
+
+# 上游 console 工程目录（构建产物拷到 src/qwenpaw/console/，源码不入库）
+upstream-console/
+
+# QwenPaw 控制台构建产物（由 build.sh 步骤 1 生成）
+app/qwenpaw/code/src/qwenpaw/console/

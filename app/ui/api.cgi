@@ -14,6 +14,42 @@ VENV_DIR="/var/apps/com.dustinky.qwenpaw/home/venv"
 
 mkdir -p "$(dirname "${LOG_FILE}")"
 
+# === v1.1.12.5 安全加固：来源校验（参考 Hermes isSafeWriteRequest） ===
+# 只校验写操作（POST），防止 curl/脚本绕过 fnOS 网关直接调用 API
+_check_write_permission() {
+    local method="${1:-GET}"
+    case "$method" in
+        GET|HEAD|OPTIONS) return 0 ;;
+    esac
+
+    local origin="${HTTP_ORIGIN:-}"
+    local referer="${HTTP_REFERER:-}"
+    local remote_addr="${REMOTE_ADDR:-}"
+
+    # 1) Origin 头：允许本地 / 内网 / fnOS 相关域
+    if [ -n "$origin" ]; then
+        case "$origin" in
+            *localhost*|*127.0.0*|*192.168.*|*10.*|*172.1[6-9].*|*172.2[0-9].*|*172.3[0-1].*|*fnos*|*trim*|*thirdparty*) return 0 ;;
+        esac
+    fi
+
+    # 2) Referer 头（同上）
+    if [ -n "$referer" ]; then
+        case "$referer" in
+            *localhost*|*127.0.0*|*192.168.*|*10.*|*172.1[6-9].*|*172.2[0-9].*|*172.3[0-1].*|*fnos*|*trim*|*thirdparty*) return 0 ;;
+        esac
+    fi
+
+    # 3) 没有来源头：检查客户端 IP 是否本地/内网
+    if [ -n "$remote_addr" ]; then
+        case "$remote_addr" in
+            127.*|::1|10.*|192.168.*|172.1[6-9].*|172.2[0-9].*|172.3[0-1].*) return 0 ;;
+        esac
+    fi
+
+    return 1
+}
+
 check_process() {
     local pid=$1
     if [ -n "${pid}" ] && kill -0 "${pid}" 2>/dev/null; then
@@ -507,6 +543,18 @@ if [ -z "$action" ] && [ -n "$REQUEST_URI" ]; then
         action="backup_download"
     fi
 fi
+
+# === v1.1.12.5 安全加固：写操作来源校验 ===
+case "$action" in
+    start|stop|restart|upgrade|clear_logs|reset_auth|backup_download)
+        if ! _check_write_permission "${REQUEST_METHOD:-GET}"; then
+            echo "Content-Type: application/json"
+            echo ""
+            echo '{"success":false,"message":"403 Forbidden: untrusted origin"}'
+            exit 0
+        fi
+        ;;
+esac
 
 case "$action" in
     status)

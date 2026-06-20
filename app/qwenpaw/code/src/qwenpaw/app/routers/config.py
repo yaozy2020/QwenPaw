@@ -34,6 +34,7 @@ from ...config.config import (
     SkillScannerConfig,
     SkillScannerWhitelistEntry,
     TelegramConfig,
+    VoiceChannelConfig,
     WecomConfig,
 )
 from ...agents.acp.core import ACPConfig, ACPAgentConfig
@@ -59,6 +60,7 @@ _CHANNEL_CONFIG_CLASS_MAP = {
     "qq": QQConfig,
     "imessage": IMessageChannelConfig,
     "console": ConsoleConfig,
+    "voice": VoiceChannelConfig,
     "sip": SIPChannelConfig,
     "mattermost": MattermostConfig,
     "mqtt": MQTTConfig,

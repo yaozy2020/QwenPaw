@@ -926,6 +926,16 @@ def enabled_channel_notes(cfg: Config) -> list[str]:
                         f"{agent_id}: matrix enabled but "
                         "homeserver/user_id/access_token incomplete",
                     )
+            elif name == "voice":
+                if (
+                    not (sub.twilio_account_sid or "").strip()
+                    or not (sub.twilio_auth_token or "").strip()
+                    or not (sub.phone_number or "").strip()
+                ):
+                    notes.append(
+                        f"{agent_id}: voice enabled but Twilio fields "
+                        "incomplete",
+                    )
             elif name == "wecom":
                 if (
                     not (sub.bot_id or "").strip()
