@@ -109,33 +109,39 @@ echo "[2/6] 准备 staging ..."
 rm -rf "$STAGE"
 mkdir -p "$STAGE"
 
-# 用 tar 复制大部分文件（排除源码开发目录，后面手动精简复制）
+# 用 tar 复制大部分文件（排除源码/测试/文档开发目录，后面手动精简复制）
 tar -cf - -C "$PROJ_DIR" \
   --exclude='build' \
   --exclude='src/qwenpaw' \
   --exclude='plugins' \
   --exclude='console' \
   --exclude='console/dist' \
+  --exclude='upstream-console' \
   --exclude='ui-fndesign/node_modules' \
   --exclude='ui-fndesign/dist' \
   --exclude='ui-fndesign/.turbo' \
   --exclude='.git' \
   --exclude='.github' \
   --exclude='scripts' \
+  --exclude='e2e' \
+  --exclude='tests' \
+  --exclude='website' \
+  --exclude='docs' \
+  --exclude='deploy' \
   --exclude='AUDIT_REPORT.md' \
   --exclude='*.fpk' \
   --exclude='*.sha256' \
   . | tar -xf - -C "$STAGE"
 
-# 手动复制精简后的 Python 源码（仅 src/qwenpaw + plugins）
-echo "  瘦身 Python 源码（仅 src/qwenpaw + plugins）..."
-mkdir -p "$STAGE/src/qwenpaw" "$STAGE/plugins"
-cp -a "$PROJ_DIR/src/qwenpaw" "$STAGE/src/"
-cp -a "$PROJ_DIR/plugins" "$STAGE/"
+# 手动复制精简后的 Python 源码（fnpack 识别路径：app/qwenpaw/code/）
+echo "  瘦身 Python 源码（fnpack 兼容路径）..."
+mkdir -p "$STAGE/app/qwenpaw/code"
+cp -a "$PROJ_DIR/src/qwenpaw" "$STAGE/app/qwenpaw/code/"
+cp -a "$PROJ_DIR/plugins" "$STAGE/app/qwenpaw/code/"
 # 保留 LICENSE 和上游 setup 必需的最小文件（pip install -e 需要 pyproject.toml/setup.py）
-[ -f "$PROJ_DIR/pyproject.toml" ] && cp "$PROJ_DIR/pyproject.toml" "$STAGE/"
-[ -f "$PROJ_DIR/setup.py" ] && cp "$PROJ_DIR/setup.py" "$STAGE/"
-[ -f "$PROJ_DIR/LICENSE" ] && cp "$PROJ_DIR/LICENSE" "$STAGE/"
+[ -f "$PROJ_DIR/pyproject.toml" ] && cp "$PROJ_DIR/pyproject.toml" "$STAGE/app/qwenpaw/code/"
+[ -f "$PROJ_DIR/setup.py" ] && cp "$PROJ_DIR/setup.py" "$STAGE/app/qwenpaw/code/"
+[ -f "$PROJ_DIR/LICENSE" ] && cp "$PROJ_DIR/LICENSE" "$STAGE/app/qwenpaw/code/"
 
 # 删 staging 中不该进 fpk 的文件
 rm -rf "$STAGE/ui-fndesign"   # 前端源码不进 fpk，只要构建产物
