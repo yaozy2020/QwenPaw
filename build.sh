@@ -73,7 +73,7 @@ else
 fi
 
 # [1b/6] 构建 QwenPaw 官方 console（React + Vite，输出到 src/qwenpaw/console/）
-CONSOLE_DEST="$PROJ_DIR/app/qwenpaw/code/src/qwenpaw/console"
+CONSOLE_DEST="$PROJ_DIR/src/qwenpaw/console"
 if [ "${SKIP_CONSOLE:-0}" = "1" ]; then
   echo "[1b/6] 构建 console ... 跳过（SKIP_CONSOLE=1）"
   if [ ! -f "$CONSOLE_DEST/index.html" ]; then
@@ -109,10 +109,13 @@ echo "[2/6] 准备 staging ..."
 rm -rf "$STAGE"
 mkdir -p "$STAGE"
 
-# 用 tar 复制大部分文件（排除 app/qwenpaw/code，后面手动精简复制）
+# 用 tar 复制大部分文件（排除源码开发目录，后面手动精简复制）
 tar -cf - -C "$PROJ_DIR" \
   --exclude='build' \
-  --exclude='app/qwenpaw/code' \
+  --exclude='src/qwenpaw' \
+  --exclude='plugins' \
+  --exclude='console' \
+  --exclude='console/dist' \
   --exclude='ui-fndesign/node_modules' \
   --exclude='ui-fndesign/dist' \
   --exclude='ui-fndesign/.turbo' \
@@ -124,15 +127,15 @@ tar -cf - -C "$PROJ_DIR" \
   --exclude='*.sha256' \
   . | tar -xf - -C "$STAGE"
 
-# 手动复制精简后的 app/qwenpaw/code（仅 src/ + plugins/）
-echo "  瘦身 app/qwenpaw/code（仅 src/ + plugins/）..."
-mkdir -p "$STAGE/app/qwenpaw/code"
-cp -a "$PROJ_DIR/app/qwenpaw/code/src" "$STAGE/app/qwenpaw/code/"
-cp -a "$PROJ_DIR/app/qwenpaw/code/plugins" "$STAGE/app/qwenpaw/code/"
+# 手动复制精简后的 Python 源码（仅 src/qwenpaw + plugins）
+echo "  瘦身 Python 源码（仅 src/qwenpaw + plugins）..."
+mkdir -p "$STAGE/src/qwenpaw" "$STAGE/plugins"
+cp -a "$PROJ_DIR/src/qwenpaw" "$STAGE/src/"
+cp -a "$PROJ_DIR/plugins" "$STAGE/"
 # 保留 LICENSE 和上游 setup 必需的最小文件（pip install -e 需要 pyproject.toml/setup.py）
-[ -f "$PROJ_DIR/app/qwenpaw/code/pyproject.toml" ] && cp "$PROJ_DIR/app/qwenpaw/code/pyproject.toml" "$STAGE/app/qwenpaw/code/"
-[ -f "$PROJ_DIR/app/qwenpaw/code/setup.py" ] && cp "$PROJ_DIR/app/qwenpaw/code/setup.py" "$STAGE/app/qwenpaw/code/"
-[ -f "$PROJ_DIR/app/qwenpaw/code/LICENSE" ] && cp "$PROJ_DIR/app/qwenpaw/code/LICENSE" "$STAGE/app/qwenpaw/code/"
+[ -f "$PROJ_DIR/pyproject.toml" ] && cp "$PROJ_DIR/pyproject.toml" "$STAGE/"
+[ -f "$PROJ_DIR/setup.py" ] && cp "$PROJ_DIR/setup.py" "$STAGE/"
+[ -f "$PROJ_DIR/LICENSE" ] && cp "$PROJ_DIR/LICENSE" "$STAGE/"
 
 # 删 staging 中不该进 fpk 的文件
 rm -rf "$STAGE/ui-fndesign"   # 前端源码不进 fpk，只要构建产物
