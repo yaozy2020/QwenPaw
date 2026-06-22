@@ -652,3 +652,54 @@
     border-color: rgba(255, 255, 255, 0.1) !important;
   }
 }
+
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+
+    [class*="leading"] {
+      width: 100%;
+    }
+  }
+
+  .breadcrumbHeader {
+    flex-wrap: wrap;
+  }
+
+  .workspacePath {
+    margin-left: 0;
+    margin-top: 4px;
+    width: 100%;
+    word-break: break-all;
+    box-sizing: border-box;
+  }
+
+  .workspaceInfo {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .actionButtons {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .content {
+    flex-direction: column;
+  }
+
+  .fileListPanel {
+    width: 100%;
+    height: 40%;
+    border-right: none;
+    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .fileEditor {
+    width: 100%;
+    height: 60%;
+  }
+}

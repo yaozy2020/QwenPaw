@@ -122,6 +122,7 @@ export default function WorkspacePage() {
   return (
     <div className={styles.workspacePage}>
       <PageHeader
+        className={styles.pageHeader}
         items={[{ title: t("nav.agent") }, { title: t("workspace.title") }]}
         afterBreadcrumb={
           <p className={styles.workspacePath}>
