@@ -693,13 +693,102 @@
 
   .fileListPanel {
     width: 100%;
-    height: 40%;
+    height: auto;
+    flex: 1;
     border-right: none;
-    border-bottom: 1px solid #e8e8e8;
+  }
+
+  .content.mobileShowEditor {
+    .fileListPanel {
+      display: none;
+    }
+
+    > .fileEditor {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
   }
 
   .fileEditor {
+    display: none;
+  }
+
+  .editorCard {
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  .mobileToolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    flex-shrink: 0;
+    background: #fff;
+  }
+
+  .mobileToolbarTitle {
+    font-weight: 600;
+    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  .editorHeaderCompact {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 10px 12px;
+  }
+
+  .fileMetaCompact {
     width: 100%;
-    height: 60%;
+  }
+
+  .filePath {
+    word-break: break-all;
+    white-space: normal;
+    line-height: 1.4;
+  }
+
+  .buttonGroup {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .saveStatus {
+    font-size: 12px;
+    color: #8c8c8c;
+    margin-right: 8px;
+  }
+
+  .editorContent {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 12px;
+    overflow: hidden;
+
+    .textarea {
+      flex: 1;
+      min-height: 240px;
+
+      textarea {
+        min-height: 240px;
+      }
+    }
+  }
+
+  .markdownViewer {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
   }
 }
