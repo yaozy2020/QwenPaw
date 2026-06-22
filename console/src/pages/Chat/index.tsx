@@ -321,8 +321,8 @@ async function startBackgroundQueue(
               },
             ],
             session_id: item.backendSessionId || backendSessionId,
-            user_id: DEFAULT_USER_ID,
-            channel: DEFAULT_CHANNEL,
+            user_id: item.userId || DEFAULT_USER_ID,
+            channel: item.channel || DEFAULT_CHANNEL,
             stream: true,
           }),
         });
@@ -1713,6 +1713,8 @@ export default function ChatPage() {
                 size: f.size,
               }))
             : undefined,
+        userId: window.currentUserId || DEFAULT_USER_ID,
+        channel: window.currentChannel || DEFAULT_CHANNEL,
       });
       // Clear tracked attachments after enqueuing
       pendingFileListRef.current = [];
@@ -2287,6 +2289,8 @@ export default function ChatPage() {
                   size: f.size,
                 }))
               : undefined,
+          userId: window.currentUserId || DEFAULT_USER_ID,
+          channel: window.currentChannel || DEFAULT_CHANNEL,
         });
         pendingFileListRef.current = [];
         if (textarea) setTextareaValue(textarea, "");
