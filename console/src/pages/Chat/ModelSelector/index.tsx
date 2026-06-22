@@ -14,6 +14,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { providerApi } from "../../../api/modules/provider";
 import type { ProviderInfo, ActiveModelsInfo } from "../../../api/types";
+import { getProviderModels } from "../../../api/types";
 import { useAgentStore } from "../../../stores/agentStore";
 import { confirmFreeModelSwitch } from "@/utils/freeModelSwitchWarning";
 import { ProviderIcon } from "../../Settings/Models/components/ProviderIconComponent";
@@ -68,6 +69,8 @@ export default function ModelSelector() {
 
   const [showMoreFree, setShowMoreFree] = useState(false);
   const moreContentRef = useRef<HTMLDivElement>(null);
+  const triggerNameRef = useRef<HTMLSpanElement>(null);
+  const [shouldMarquee, setShouldMarquee] = useState(false);
   const [expandedModels, setExpandedModels] = useState<Record<string, number>>(
     {},
   );
@@ -147,7 +150,7 @@ export default function ModelSelector() {
       id: p.id,
       name: p.name,
       base_url: p.base_url,
-      models: [...(p.models ?? []), ...(p.extra_models ?? [])],
+      models: getProviderModels(p),
       is_free_tier: p.is_free_tier,
       is_custom: p.is_custom,
       is_local: p.is_local,
@@ -233,6 +236,25 @@ export default function ModelSelector() {
   })();
 
   const showActiveProviderIcon = Boolean(activeProviderId);
+
+  // Detect text overflow for marquee effect
+  useEffect(() => {
+    const el = triggerNameRef.current;
+    if (!el) return;
+
+    const checkOverflow = () => {
+      setShouldMarquee(el.scrollWidth > el.clientWidth);
+    };
+
+    checkOverflow();
+
+    const resizeObserver = new ResizeObserver(checkOverflow);
+    resizeObserver.observe(el);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [activeModelName, open]);
 
   const handleOpenChange = useCallback(
     async (next: boolean) => {
@@ -684,7 +706,9 @@ export default function ModelSelector() {
       <Dropdown
         open={open}
         onOpenChange={handleOpenChange}
-        popupRender={() => dropdownContent}
+        popupRender={() => (
+          <div style={{ transform: "translateY(0)" }}>{dropdownContent}</div>
+        )}
         trigger={["click"]}
         placement="bottomLeft"
       >
@@ -700,7 +724,18 @@ export default function ModelSelector() {
             {showActiveProviderIcon && activeProviderId && (
               <ProviderIcon providerId={activeProviderId} size={16} />
             )}
-            <span className={styles.triggerName}>{activeModelName}</span>
+            <span
+              className={styles.triggerName}
+              ref={triggerNameRef}
+            >
+              <span
+                className={
+                  shouldMarquee ? styles.marqueeText : undefined
+                }
+              >
+                {activeModelName}
+              </span>
+            </span>
             {open ? <UpOutlined /> : <DownOutlined />}
           </div>
         </Tooltip>

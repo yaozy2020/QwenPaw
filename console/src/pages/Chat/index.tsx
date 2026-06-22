@@ -20,7 +20,8 @@ import { skillApi } from "../../api/modules/skill";
 import { getApiUrl } from "../../api/config";
 import { buildAuthHeaders } from "../../api/authHeaders";
 import { providerApi } from "../../api/modules/provider";
-import type { ProviderInfo, ModelInfo, SkillSpec } from "../../api/types";
+import type { ProviderInfo, SkillSpec } from "../../api/types";
+import { getProviderModels } from "../../api/types";
 import ModelSelector from "./ModelSelector";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useAgentStore } from "../../stores/agentStore";
@@ -613,11 +614,9 @@ function useMultimodalCapabilities(
         updateCapsIfChanged(noCaps);
         return;
       }
-      const allModels: ModelInfo[] = [
-        ...(provider.models ?? []),
-        ...(provider.extra_models ?? []),
-      ];
-      const model = allModels.find((m) => m.id === activeModelId);
+      const model = getProviderModels(provider).find(
+        (m) => m.id === activeModelId,
+      );
       updateCapsIfChanged({
         supportsMultimodal: model?.supports_multimodal ?? false,
         supportsImage: model?.supports_image ?? false,
@@ -1530,9 +1529,10 @@ export default function ChatPage() {
   // takes over); start background senders for all OTHER sessions with pending
   // items. On unmount (or session switch), start bg sender for THIS session.
   useEffect(() => {
-    stopBackgroundQueue(queueSessionId);
+    const currentQueueSessionId = queueSessionId;
+    stopBackgroundQueue(currentQueueSessionId);
     // Kick off background senders for other sessions that have pending items
-    startAllBackgroundQueues(queueSessionId);
+    startAllBackgroundQueues(currentQueueSessionId);
     return () => {
       if (autoSendTimerRef.current) {
         clearTimeout(autoSendTimerRef.current);
@@ -1543,11 +1543,11 @@ export default function ChatPage() {
       if (!isOwnerRef.current) return;
       const remaining = messageQueueRef.current;
       if (remaining.length > 0) {
-        // queueKey is what the queue is stored under (may be "new");
-        // backendSessionId is the resolved id sent to /console/chat.
-        const queueKey = queueSessionIdRef.current;
+        // Use captured queueSessionId from this effect instance, not the
+        // ref (which may already point to the next session after re-render).
+        const queueKey = currentQueueSessionId;
         const backendSessionId =
-          window.currentSessionId || chatIdRef.current || "";
+          sessionApi.getBackendSessionId(queueKey) || queueKey;
         // Skip if no real backend session yet (e.g. "new" chat that never
         // resolved an id) — the items remain in storage to be picked up by
         // the next foreground load.
@@ -2888,13 +2888,19 @@ export default function ChatPage() {
 
       {/* Right-side history panel (full mode only) */}
       {isFullMode && historyPanelOpen && (
-        <div className={styles.historyPanel}>
-          <ChatSessionDrawer
-            open={historyPanelOpen}
-            onClose={toggleHistoryPanel}
-            embedded
+        <>
+          <div
+            className={styles.historyPanelMask}
+            onClick={toggleHistoryPanel}
           />
-        </div>
+          <div className={styles.historyPanel}>
+            <ChatSessionDrawer
+              open={historyPanelOpen}
+              onClose={toggleHistoryPanel}
+              embedded
+            />
+          </div>
+        </>
       )}
     </div>
   );
