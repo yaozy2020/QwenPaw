@@ -660,9 +660,12 @@
   }
 
   .mainTabs {
-    :global(.qwenpaw-tabs-nav) {
+    :global(.qwenpaw-tabs-nav),
+    :global(.qwenpaw-tabs-nav-wrap),
+    :global(.qwenpaw-tabs-nav-list) {
       overflow-x: auto;
       white-space: nowrap;
+      flex-wrap: nowrap !important;
 
       &::-webkit-scrollbar {
         display: none;
@@ -758,9 +761,12 @@
   }
 
   .mainTabs {
-    :global(.qwenpaw-tabs-nav) {
+    :global(.qwenpaw-tabs-nav),
+    :global(.qwenpaw-tabs-nav-wrap),
+    :global(.qwenpaw-tabs-nav-list) {
       overflow-x: auto;
       white-space: nowrap;
+      flex-wrap: nowrap !important;
 
       &::-webkit-scrollbar {
         display: none;
