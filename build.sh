@@ -72,8 +72,8 @@ else
   cd "$PROJ_DIR"
 fi
 
-# [1b/6] 构建 QwenPaw 官方 console（React + Vite，输出到 src/qwenpaw/console/）
-CONSOLE_DEST="$PROJ_DIR/src/qwenpaw/console"
+# [1b/6] 构建 QwenPaw 官方 console（React + Vite，输出到 app/qwenpaw/code/src/qwenpaw/console/）
+CONSOLE_DEST="$PROJ_DIR/app/qwenpaw/code/src/qwenpaw/console"
 if [ "${SKIP_CONSOLE:-0}" = "1" ]; then
   echo "[1b/6] 构建 console ... 跳过（SKIP_CONSOLE=1）"
   if [ ! -f "$CONSOLE_DEST/index.html" ]; then
@@ -136,12 +136,12 @@ tar -cf - -C "$PROJ_DIR" \
 # 手动复制精简后的 Python 源码（fnpack 识别路径：app/qwenpaw/code/src/qwenpaw/）
 echo "  瘦身 Python 源码（fnpack 兼容路径）..."
 mkdir -p "$STAGE/app/qwenpaw/code/src"
-cp -a "$PROJ_DIR/src/qwenpaw" "$STAGE/app/qwenpaw/code/src/"
-cp -a "$PROJ_DIR/plugins" "$STAGE/app/qwenpaw/code/"
+cp -a "$PROJ_DIR/app/qwenpaw/code/src/qwenpaw" "$STAGE/app/qwenpaw/code/src/"
+cp -a "$PROJ_DIR/app/qwenpaw/code/plugins" "$STAGE/app/qwenpaw/code/"
 # 保留 LICENSE 和上游 setup 必需的最小文件（pip install -e 需要 pyproject.toml/setup.py）
-[ -f "$PROJ_DIR/pyproject.toml" ] && cp "$PROJ_DIR/pyproject.toml" "$STAGE/app/qwenpaw/code/"
-[ -f "$PROJ_DIR/setup.py" ] && cp "$PROJ_DIR/setup.py" "$STAGE/app/qwenpaw/code/"
-[ -f "$PROJ_DIR/LICENSE" ] && cp "$PROJ_DIR/LICENSE" "$STAGE/app/qwenpaw/code/"
+[ -f "$PROJ_DIR/app/qwenpaw/code/pyproject.toml" ] && cp "$PROJ_DIR/app/qwenpaw/code/pyproject.toml" "$STAGE/app/qwenpaw/code/"
+[ -f "$PROJ_DIR/app/qwenpaw/code/setup.py" ] && cp "$PROJ_DIR/app/qwenpaw/code/setup.py" "$STAGE/app/qwenpaw/code/"
+[ -f "$PROJ_DIR/app/qwenpaw/code/LICENSE" ] && cp "$PROJ_DIR/app/qwenpaw/code/LICENSE" "$STAGE/app/qwenpaw/code/"
 
 # 删 staging 中不该进 fpk 的文件
 rm -rf "$STAGE/ui-fndesign"   # 前端源码不进 fpk，只要构建产物

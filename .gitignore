@@ -11,3 +11,15 @@ upstream-console/
 
 # QwenPaw 控制台构建产物（由 build.sh 步骤 1 生成）
 app/qwenpaw/code/src/qwenpaw/console/
+
+# 上游源码统一在 app/qwenpaw/code/，避免根目录再次出现
+console/
+plugins/
+e2e/
+tests/
+docs/
+website/
+deploy/
+src/
+app/ui/
+app/www/
